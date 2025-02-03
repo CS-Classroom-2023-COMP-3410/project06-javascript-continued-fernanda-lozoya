@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Adventure Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .game-container {
+      max-width: 600px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+    }
+
+    .story {
+      margin-bottom: 20px;
+    }
+
+    .choices button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .choices button:hover {
+      background-color: #0056b3;
+    }
+
+    .progress {
+      margin-bottom: 20px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .buttons button {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .reset {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .reset:hover {
+      background-color: #c82333;
+    }
+
+    .save {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .save:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="progress" id="progress">Progress: Start</div>
+    <div class="story" id="story">Your adventure begins...</div>
+    <div class="choices" id="choices"></div>
+  </div>
+  <div class="buttons">
+    <button class="reset" onclick="resetGame()">Reset</button>
+    <button class="save" onclick="saveProgress()">Save</button>
+  </div>
+
+  <script>
+    const storyData = {
+      start: {
+        text: "As the sun sets over the ancient ruins, you find yourself standing at the entrance of a hidden temple. Legend speaks of an artifact buried deep within, but many who enter never return. Do you dare step inside?",
+        choices: [
+          { text: "Enter the temple", next: "hallway" },
+          { text: "Explore the jungle", next: "jungle" },
+          { text: "Set up camp for the night", next: "camp" }
+        ],
+      },
+      hallway: {
+        text: "The temple is dark, lit only by flickering torches. A long hallway stretches ahead, with carvings depicting a lost civilization. Suddenly, you hear a noise. What will you do?",
+        choices: [
+          { text: "Investigate the noise", next: "trap" },
+          { text: "Proceed cautiously forward", next: "chamber" },
+          { text: "Look for another way around", next: "secret_passage" }
+        ],
+      },
+      jungle: {
+        text: "You venture deeper into the jungle, the air thick with mist. A rustling sound catches your attention. Something is watching you. What is your next move?",
+        choices: [
+          { text: "Call out to the presence", next: "ally" },
+          { text: "Hide behind a tree and observe", next: "hide" },
+          { text: "Prepare your weapon", next: "fight" }
+        ],
+      },
+      camp: {
+        text: "You decide to set up camp for the night. As the fire crackles, you hear something approaching. How do you respond?",
+        choices: [
+          { text: "Investigate the sound", next: "stranger" },
+          { text: "Douse the fire and hide", next: "stealth" },
+          { text: "Stay still and listen", next: "listen" }
+        ],
+      }
+    };
+
+    let currentScene = localStorage.getItem("currentScene") || "start";
+
+    function updateStory() {
+      const scene = storyData[currentScene];
+      if (!scene) {
+        resetGame();
+        return;
+      }
+      document.getElementById("story").innerText = scene.text;
+      document.getElementById("progress").innerText = `Progress: ${currentScene}`;
+
+      const choicesDiv = document.getElementById("choices");
+      choicesDiv.innerHTML = "";
+      if (scene.choices && scene.choices.length > 0) {
+        scene.choices.forEach((choice) => {
+          if (storyData[choice.next]) {
+            const button = document.createElement("button");
+            button.innerText = choice.text;
+            button.onclick = function() {
+              currentScene = choice.next;
+              localStorage.setItem("currentScene", currentScene);
+              updateStory();
+            };
+            choicesDiv.appendChild(button);
+          }
+        });
+      } else {
+        const endMessage = document.createElement("p");
+        endMessage.innerText = "The story ends here. Reset to start over.";
+        choicesDiv.appendChild(endMessage);
+      }
+    }
+
+    function resetGame() {
+      currentScene = "start";
+      localStorage.removeItem("currentScene");
+      updateStory();
+    }
+
+    function saveProgress() {
+      localStorage.setItem("currentScene", currentScene);
+      alert("Progress saved!");
+    }
+
+    updateStory();
+  </script>
+</body>
+</html>

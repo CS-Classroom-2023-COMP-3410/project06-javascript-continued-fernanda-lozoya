@@ -1,0 +1,198 @@
+<!--WORKING-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Story Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .game-container {
+      max-width: 600px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+    }
+
+    .story {
+      margin-bottom: 20px;
+    }
+
+    .choices button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .choices button:hover {
+      background-color: #0056b3;
+    }
+
+    .progress {
+      margin-bottom: 20px;
+      padding: 10px;
+      background: #f9f9f9;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .buttons button {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .reset {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .reset:hover {
+      background-color: #c82333;
+    }
+
+    .save {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .save:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="progress" id="progress">Progress: Start</div>
+    <div class="story" id="story">Welcome to the interactive story game! Your adventure begins here.</div>
+    <div class="choices" id="choices"></div>
+  </div>
+  <div class="buttons">
+    <button class="reset" onclick="resetGame()">Reset</button>
+    <button class="save" onclick="saveProgress()">Save</button>
+  </div>
+
+  <script>
+    const storyData = {
+      start: {
+        text: "You are a legendary adventurer, standing before the gates of the mystical Land of Zareth. Rumors speak of treasures untold and dangers unimaginable. Do you dare to step inside?",
+        choices: [
+          { text: "Enter the Land of Zareth", next: "forest" },
+          { text: "Turn back to the safety of your village", next: "village" },
+        ],
+      },
+      forest: {
+        text: "The forest of Zareth is dense and filled with strange glowing plants. You hear a roar in the distance. What will you do?",
+        choices: [
+          { text: "Investigate the roar", next: "dragon" },
+          { text: "Take a safer path", next: "river" },
+        ],
+      },
+      village: {
+        text: "You return to your village, but the thought of adventure lingers in your mind. Do you want to change your mind?",
+        choices: [
+          { text: "Yes, go back to Zareth", next: "start" },
+          { text: "Stay and live a quiet life", next: "endQuietLife" },
+        ],
+      },
+      dragon: {
+        text: "You find a massive dragon guarding a golden hoard. The dragon sees you. Do you fight it or try to talk?",
+        choices: [
+          { text: "Fight the dragon", next: "fight" },
+          { text: "Try to talk to the dragon", next: "talk" },
+        ],
+      },
+      river: {
+        text: "You follow a safer path and find a sparkling river. As you drink from the water, you feel rejuvenated. Suddenly, a group of bandits appears. Do you fight or run?",
+        choices: [
+          { text: "Fight the bandits", next: "fightBandits" },
+          { text: "Run away", next: "forest" },
+        ],
+      },
+      fight: {
+        text: "You bravely fight the dragon, but its power is overwhelming. You are defeated. Your story ends here...",
+        choices: [],
+      },
+      talk: {
+        text: "The dragon speaks! It admires your courage and grants you a share of its treasure. You return home a hero!",
+        choices: [],
+      },
+      fightBandits: {
+        text: "You defeat the bandits and find a map pointing to a hidden treasure deep in the forest. What will you do?",
+        choices: [
+          { text: "Follow the map", next: "treasure" },
+          { text: "Ignore the map and explore the forest", next: "forest" },
+        ],
+      },
+      treasure: {
+        text: "The map leads you to a hidden treasure chest filled with ancient artifacts and gold. You have found your fortune!",
+        choices: [],
+      },
+      endQuietLife: {
+        text: "You live a peaceful life in your village, but you always wonder what could have been...",
+        choices: [],
+      },
+    };
+
+    let currentScene = localStorage.getItem("currentScene") || "start";
+
+    function updateStory() {
+      const scene = storyData[currentScene];
+      document.getElementById("story").innerText = scene.text;
+      document.getElementById("progress").innerText = `Progress: ${currentScene}`;
+
+      const choicesDiv = document.getElementById("choices");
+      choicesDiv.innerHTML = "";
+      scene.choices.forEach((choice) => {
+        const button = document.createElement("button");
+        button.innerText = choice.text;
+        button.onclick = () => {
+          currentScene = choice.next;
+          updateStory();
+        };
+        choicesDiv.appendChild(button);
+      });
+    }
+
+    function resetGame() {
+      currentScene = "start";
+      updateStory();
+    }
+
+    function saveProgress() {
+      localStorage.setItem("currentScene", currentScene);
+      alert("Progress saved!");
+    }
+
+    updateStory();
+  </script>
+</body>
+</html>
+
